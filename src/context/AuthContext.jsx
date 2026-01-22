@@ -20,12 +20,16 @@ export const AuthProvider = ({ children }) => {
   const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
   useEffect(() => {
+    axios.defaults.withCredentials = true;
+
     const checkAuth = async () => {
       try {
         const response = await axios.get(`${API_BASE_URL}/users/me`);
         setUser(response.data);
       } catch (error) {
         console.log("No active session:", error.message);
+        Cookies.remove("token");
+        delete axios.defaults.headers.common["Authorization"];
       }
       setLoading(false);
     };
@@ -47,13 +51,17 @@ export const AuthProvider = ({ children }) => {
         return { success: false, error: "Некорректный формат email" };
       }
 
-      await axios.post(`${API_BASE_URL}/users/login`, {
-        email: email.trim().toLowerCase(),
+      const loginResponse = await axios.post(`${API_BASE_URL}/users/login`, {
+        email: email.trim(),
         password,
       });
 
-      const userResponse = await axios.get(`${API_BASE_URL}/users/me`);
-      setUser(userResponse.data);
+      if (loginResponse.data.login === true) {
+        const userResponse = await axios.get(`${API_BASE_URL}/users/me`);
+        setUser(userResponse.data);
+      } else {
+        throw new Error("Login failed");
+      }
 
       return { success: true };
     } catch (error) {
@@ -85,10 +93,16 @@ export const AuthProvider = ({ children }) => {
         return { success: false, error: "Пароль максимум 30 символов" };
       }
 
-      await axios.post(`${API_BASE_URL}/users`, {
+      const registerResponse = await axios.post(`${API_BASE_URL}/users`, {
         email,
         password,
       });
+
+      const token = registerResponse.data.access_token;
+      if (token) {
+        Cookies.set("token", token, { expires: 7 });
+        axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+      }
 
       const userResponse = await axios.get(`${API_BASE_URL}/users/me`);
       setUser(userResponse.data);
@@ -102,7 +116,12 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = () => {
+  const logout = async () => {
+    try {
+      await axios.post(`${API_BASE_URL}/users/logout`);
+    } catch {
+      // Logout error
+    }
     Cookies.remove("token");
     delete axios.defaults.headers.common["Authorization"];
     setUser(null);

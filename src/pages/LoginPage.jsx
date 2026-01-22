@@ -1,4 +1,12 @@
 // LoginPage.jsx
-// Страница входа в приложение.
-// Использует компонент Auth.jsx для отображения формы авторизации.
-// Перенаправляет на Dashboard после успешного входа.
+// Страница входа.
+// Отображает компонент Auth для авторизации пользователя.
+
+import React from "react";
+import Auth from "../components/Auth";
+
+const LoginPage = () => {
+  return <Auth />;
+};
+
+export default LoginPage;

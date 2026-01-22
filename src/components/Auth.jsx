@@ -6,32 +6,114 @@
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
 import { useAuth } from "../context/AuthContext";
+import "./Auth.css";
 
 const Auth = () => {
   const { login, register: registerUser } = useAuth();
   const [isLogin, setIsLogin] = useState(true);
   const [authError, setAuthError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm();
+
+  const onSubmit = async (data) => {
+    if (isLoading) return;
+
+    setIsLoading(true);
+    setAuthError("");
+
+    try {
+      if (isLogin) {
+        const result = await login(data.email, data.password);
+        if (!result.success) {
+          setAuthError(result.error);
+        }
+      } else {
+        const result = await registerUser(data.email, data.password);
+        if (!result.success) {
+          setAuthError(result.error);
+        }
+      }
+      reset();
+    } catch (error) {
+      setAuthError("Произошла ошибка");
+      console.error("Auth error:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <div className="auth-container">
       <div>
-        <h1>BMBP - Big money for Big people</h1>
+        <h1>BMBP Finance Tracker</h1>
         <div className="auth-card">
           <h2>{isLogin ? "Вход" : "Регистрация"}</h2>
 
-          <form>
+          <form onSubmit={handleSubmit(onSubmit)}>
             <div className="form-group">
               <label>Email</label>
-              <input type="email" placeholder="your@email.com" required />
+              <input
+                {...register("email", {
+                  required: "Email обязателен",
+                  pattern: {
+                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/i,
+                    message: "Некорректный email",
+                  },
+                })}
+                type="email"
+                placeholder="your@email.com"
+                disabled={isLoading}
+              />
+              {errors.email && (
+                <span className="error">{errors.email.message}</span>
+              )}
             </div>
 
             <div className="form-group">
               <label>Пароль</label>
-              <input type="password" placeholder="••••••••" required />
+              <input
+                {...register("password", {
+                  required: "Пароль обязателен",
+                  minLength: {
+                    value: 6,
+                    message: "Минимум 6 символов",
+                  },
+                  ...(isLogin
+                    ? {}
+                    : {
+                        maxLength: {
+                          value: 30,
+                          message: "Максимум 30 символов",
+                        },
+                        pattern: {
+                          value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)/,
+                          message:
+                            "Пароль должен содержать буквы верхнего и нижнего регистра и цифры",
+                        },
+                      }),
+                })}
+                type="password"
+                placeholder="••••••••"
+                disabled={isLoading}
+              />
+              {errors.password && (
+                <span className="error">{errors.password.message}</span>
+              )}
             </div>
 
-            <button type="submit" className="submit-btn">
-              {isLogin ? "Войти" : "Создать аккаунт"}
+            {authError && <div className="error-message">{authError}</div>}
+
+            <button type="submit" className="submit-btn" disabled={isLoading}>
+              {isLoading
+                ? "Загрузка..."
+                : isLogin
+                ? "Войти"
+                : "Создать аккаунт"}
             </button>
           </form>
 
