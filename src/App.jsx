@@ -1,15 +1,12 @@
-// App.jsx
-// Главный компонент приложения.
-// Настраивает роутинг с использованием react-router-dom.
-// Определяет маршруты: /login для авторизации, /dashboard для главной страницы.
-// Оборачивает приложение в AuthProvider для управления аутентификацией.
-
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
-import { AuthProvider, useAuth } from "./context/AuthContext";
+import { AuthProvider } from "./context/AuthContext";
+import { useAuth } from "./hooks/useAuth";
 import Auth from "./components/Auth";
 import DashboardPage from "./pages/DashboardPage";
 import LoginPage from "./pages/LoginPage";
+import BalancePage from "./pages/balance/BalancePage";
+import Layout from "./components/Layout";
 import "./App.css";
 
 const ProtectedRoute = ({ children }) => {
@@ -19,7 +16,7 @@ const ProtectedRoute = ({ children }) => {
     return <div>Загрузка...</div>;
   }
 
-  return user ? children : <Navigate to="/login" replace />;
+  return user ? <Layout>{children}</Layout> : <Navigate to="/login" replace />;
 };
 
 const GuestRoute = ({ children }) => {
@@ -50,6 +47,14 @@ function App() {
             element={
               <ProtectedRoute>
                 <DashboardPage />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/balance"
+            element={
+              <ProtectedRoute>
+                <BalancePage />
               </ProtectedRoute>
             }
           />

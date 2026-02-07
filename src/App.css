@@ -1,12 +1,13 @@
 body {
   margin: 0;
   padding: 0;
+  padding-bottom: 80px;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 #root {
   min-height: 100vh;
-  background: linear-gradient(135deg, #000000 0%, #3a3a3a 100%);
+  background: black;
   color: #ffffff;
   display: flex;
   align-items: center;

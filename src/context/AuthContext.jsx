@@ -1,17 +1,8 @@
-// AuthContext.jsx
-// Контекст для управления состоянием аутентификации пользователя.
-// Будет предоставлять функции для входа, выхода и проверки статуса аутентификации.
-// Используется для защиты маршрутов и отображения соответствующего UI.
-
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 
 const AuthContext = createContext();
-
-export const useAuth = () => {
-  return useContext(AuthContext);
-};
 
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
@@ -35,7 +26,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     checkAuth();
-  }, []);
+  }, [API_BASE_URL]);
 
   const login = async (email, password) => {
     try {
@@ -116,12 +107,7 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = async () => {
-    try {
-      await axios.post(`${API_BASE_URL}/users/logout`);
-    } catch {
-      // Logout error
-    }
+  const logout = () => {
     Cookies.remove("token");
     delete axios.defaults.headers.common["Authorization"];
     setUser(null);
@@ -137,3 +123,4 @@ export const AuthProvider = ({ children }) => {
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 };
+export { AuthContext };

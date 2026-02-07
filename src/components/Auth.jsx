@@ -1,11 +1,6 @@
-// Auth.jsx
-// Компонент для окна регистрации и авторизации пользователя.
-// Содержит формы для ввода логина/пароля, переключение между регистрацией и входом.
-// Интегрируется с AuthContext для аутентификации.
-
 import React, { useState } from "react";
 import { useForm } from "react-hook-form";
-import { useAuth } from "../context/AuthContext";
+import { useAuth } from "../hooks/useAuth";
 import "./Auth.css";
 
 const Auth = () => {

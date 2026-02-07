@@ -3,22 +3,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, #000000 0%, #3a3a3a 100%);
+  background: black;
   padding: 20px;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
 }
 
 .auth-container > div {
   width: 100%;
-  max-width: clamp(350px, 90vw, 500px);
+  max-width: 500px;
 }
 
 .auth-container h1 {
   text-align: center;
   color: rgb(255, 255, 255);
-  font-size: clamp(1.8rem, 4vw, 2.5rem);
+  font-size: 32px;
   font-weight: 300;
-  margin-bottom: 2rem;
+  margin-bottom: 32px;
   text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
   letter-spacing: 1px;
 }
@@ -26,7 +26,7 @@
 .auth-card {
   background: white;
   border-radius: 15px;
-  padding: 2rem;
+  padding: 32px;
   box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
   animation: slideUp 0.5s ease-out;
 }
@@ -45,29 +45,29 @@
 .auth-card h2 {
   text-align: center;
   color: #333;
-  font-size: 1.8rem;
+  font-size: 28px;
   font-weight: 500;
-  margin-bottom: 1.5rem;
+  margin-bottom: 24px;
 }
 
 .form-group {
-  margin-bottom: 1.5rem;
+  margin-bottom: 24px;
 }
 
 .form-group label {
   display: block;
   color: #555;
   font-weight: 500;
-  margin-bottom: 0.5rem;
-  font-size: 0.9rem;
+  margin-bottom: 8px;
+  font-size: 14px;
 }
 
 .form-group input {
   width: 100%;
-  padding: 0.75rem;
+  padding: 12px;
   border: 2px solid #e1e5e9;
   border-radius: 8px;
-  font-size: 1rem;
+  font-size: 16px;
   transition: all 0.3s ease;
   box-sizing: border-box;
 }
@@ -96,34 +96,34 @@
 
 .error {
   color: #dc3545;
-  font-size: 0.8rem;
-  margin-top: 0.25rem;
+  font-size: 12px;
+  margin-top: 4px;
   display: block;
 }
 
 .error-message {
   background-color: #f8d7da;
   color: #721c24;
-  padding: 0.75rem;
+  padding: 12px;
   border-radius: 6px;
   border: 1px solid #f5c6cb;
-  margin-bottom: 1rem;
-  font-size: 0.9rem;
+  margin-bottom: 16px;
+  font-size: 14px;
   text-align: center;
 }
 
 .submit-btn {
   width: 100%;
-  padding: 0.875rem;
-  background: linear-gradient(135deg, #000000 0%, #6f6f6f 100%);
+  padding: 14px;
+  background: black;
   color: white;
   border: none;
   border-radius: 8px;
-  font-size: 1.2rem;
+  font-size: 19px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.3s ease;
-  margin-bottom: 1.5rem;
+  margin-bottom: 24px;
 }
 
 .submit-btn:hover:not(:disabled) {
@@ -139,14 +139,14 @@
 
 .auth-switch {
   text-align: center;
-  margin-top: 1.5rem;
-  padding-top: 1.5rem;
+  margin-top: 24px;
+  padding-top: 24px;
   border-top: 1px solid #e1e5e9;
 }
 
 .auth-switch p {
   color: #666;
-  font-size: 0.9rem;
+  font-size: 14px;
   margin: 0;
 }
 
@@ -159,7 +159,7 @@
   text-decoration: underline;
   font-size: inherit;
   padding: 0;
-  margin-left: 0.25rem;
+  margin-left: 4px;
   transition: color 0.3s ease;
 }
 
@@ -173,59 +173,59 @@
   }
 
   .auth-container h1 {
-    font-size: clamp(2rem, 6vw, 2.8rem);
-    margin-bottom: 1.5rem;
+    font-size: 32px;
+    margin-bottom: 24px;
   }
 
   .auth-card {
-    padding: 2rem 1.5rem;
+    padding: 32px 24px;
     border-radius: 12px;
   }
 
   .auth-card h2 {
-    font-size: clamp(1.5rem, 4vw, 2rem);
+    font-size: 24px;
   }
 
   .submit-btn {
-    font-size: 1.1rem;
-    padding: 0.8rem;
+    font-size: 18px;
+    padding: 13px;
   }
 }
 
 @media (max-width: 480px) {
   .auth-container {
     padding: 10px;
-    min-height: 100dvh;
+    min-height: 100vh;
   }
 
   .auth-container h1 {
-    font-size: clamp(1.8rem, 8vw, 2.2rem);
-    margin-bottom: 1rem;
+    font-size: 28px;
+    margin-bottom: 16px;
   }
 
   .auth-card {
-    padding: 1.5rem 1rem;
+    padding: 24px 16px;
     border-radius: 10px;
     margin: 10px 0;
   }
 
   .auth-card h2 {
-    font-size: clamp(1.4rem, 6vw, 1.6rem);
-    margin-bottom: 1rem;
+    font-size: 20px;
+    margin-bottom: 16px;
   }
 
   .form-group input {
-    padding: 0.7rem;
+    padding: 11px;
     font-size: 16px;
   }
 
   .submit-btn {
-    font-size: 1rem;
-    padding: 0.75rem;
+    font-size: 16px;
+    padding: 12px;
   }
 
   .auth-switch p {
-    font-size: 0.85rem;
+    font-size: 13px;
   }
 }
 

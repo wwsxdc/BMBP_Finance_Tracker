@@ -1,17 +1,10 @@
-// DashboardPage.jsx
-// Страница дашборда.
-// Содержит компоненты Dashboard и Menu.
-// Отображается после авторизации пользователя.
-
 import React from "react";
-import Dashboard from "../components/Dashboard";
-import Menu from "../components/Menu";
 
 const DashboardPage = () => {
   return (
-    <div>
-      <Dashboard />
-      <Menu />
+    <div style={{ padding: "20px", textAlign: "center" }}>
+      <h1>графики и транзакции</h1>
+      <p></p>
     </div>
   );
 };

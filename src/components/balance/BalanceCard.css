@@ -1,0 +1,57 @@
+.bank-card {
+  width: 300px;
+  height: 180px;
+  border-radius: 12px;
+  background: gray;
+  color: rgb(255, 255, 255);
+  padding: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+  transition: transform 0.3s;
+}
+
+.bank-card:hover {
+  transform: translateY(-5px);
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.card-chip {
+  width: 40px;
+  height: 30px;
+  background: #ffd700;
+  border-radius: 4px;
+}
+
+.card-logo {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.card-balance {
+  text-align: center;
+  margin-bottom: 24px;
+}
+
+.balance-label {
+  font-size: 12px;
+  opacity: 0.8;
+  margin-bottom: 8px;
+}
+
+.balance-amount {
+  font-size: 28px;
+  font-weight: bold;
+  letter-spacing: 1px;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+}
