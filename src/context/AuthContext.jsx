@@ -10,13 +10,18 @@ export const AuthProvider = ({ children }) => {
 
   const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
 
+  const fetchUser = async () => {
+    const response = await axios.get(`${API_BASE_URL}/users/me`);
+    setUser(response.data);
+    return response.data;
+  };
+
   useEffect(() => {
     axios.defaults.withCredentials = true;
 
     const checkAuth = async () => {
       try {
-        const response = await axios.get(`${API_BASE_URL}/users/me`);
-        setUser(response.data);
+        await fetchUser();
       } catch (error) {
         console.log("No active session:", error.message);
         Cookies.remove("token");
@@ -48,8 +53,7 @@ export const AuthProvider = ({ children }) => {
       });
 
       if (loginResponse.data.login === true) {
-        const userResponse = await axios.get(`${API_BASE_URL}/users/me`);
-        setUser(userResponse.data);
+        await fetchUser();
       } else {
         throw new Error("Login failed");
       }
@@ -95,8 +99,7 @@ export const AuthProvider = ({ children }) => {
         axios.defaults.headers.common["Authorization"] = `Bearer ${token}`;
       }
 
-      const userResponse = await axios.get(`${API_BASE_URL}/users/me`);
-      setUser(userResponse.data);
+      await fetchUser();
 
       return { success: true };
     } catch (error) {
@@ -119,6 +122,7 @@ export const AuthProvider = ({ children }) => {
     login,
     register,
     logout,
+    refreshUser: fetchUser,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

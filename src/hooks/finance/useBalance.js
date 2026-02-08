@@ -6,7 +6,7 @@ import {
 } from "../../services/api/financeApi";
 
 export const useBalance = () => {
-  const { user } = useContext(AuthContext);
+  const { user, refreshUser } = useContext(AuthContext);
   const [balance, setBalance] = useState({
     totalIncome: 0,
     totalExpenses: 0,
@@ -43,6 +43,9 @@ export const useBalance = () => {
     try {
       setError(null);
       await createAccount(name, initialBalance);
+      if (refreshUser) {
+        await refreshUser();
+      }
 
       return { success: true };
     } catch (err) {
@@ -55,6 +58,9 @@ export const useBalance = () => {
     try {
       setError(null);
       await updateAccountBalance(accountId, amount);
+      if (refreshUser) {
+        await refreshUser();
+      }
 
       return { success: true };
     } catch (err) {

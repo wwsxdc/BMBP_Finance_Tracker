@@ -78,22 +78,23 @@ export const getTransactionsForAccount = async (
 
 export const createTransaction = async (data) => {
   try {
-    const { amount, type, categoryId, description } = data;
+    const { amount, type, categoryId, description, accountId } = data;
 
+    if (!accountId) {
+      throw new Error("Необходимо указать счет");
+    }
     if (!amount || amount <= 0) {
       throw new Error("Сумма должна быть положительной");
     }
-    if (!type || !["income", "expense"].includes(type)) {
-      throw new Error("Тип должен быть income или expense");
-    }
-    if (!categoryId) {
-      throw new Error("Необходимо указать категорию");
+    if (!type || !["income", "expense", "transfer"].includes(type)) {
+      throw new Error("Тип должен быть income, expense или transfer");
     }
 
     const response = await axios.post(`${API_BASE_URL}/transactions`, {
       amount: Number(amount),
       type,
-      categoryId: Number(categoryId),
+      account_id: accountId,
+      category_id: categoryId || null,
       description: description || "",
     });
     return response.data;

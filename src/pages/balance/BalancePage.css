@@ -1,0 +1,79 @@
+.balance-page {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 16px;
+}
+
+.transaction-form {
+  max-width: 420px;
+}
+
+.transaction-form form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.form-row {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.form-row input,
+.form-row select {
+  padding: 10px;
+  border: 1px solid #c9c9c9;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.form-error {
+  color: #b00020;
+  font-size: 14px;
+}
+
+.form-success {
+  color: #2e7d32;
+  font-size: 14px;
+}
+
+.transaction-form button {
+  padding: 10px 14px;
+  border: none;
+  border-radius: 6px;
+  background: gray;
+  color: #ffffff;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.transaction-form button:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+.empty-state {
+  max-width: 420px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  text-align: center;
+}
+
+.empty-state button {
+  padding: 10px 14px;
+  border: none;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #000000;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.empty-state button:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
