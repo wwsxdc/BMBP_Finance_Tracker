@@ -44,7 +44,7 @@ const DashboardPage = () => {
     fetchTransactions();
   }, [accountId]);
 
-  const { chartPoints, rangeTransactions } = useMemo(() => {
+  const { chartPoints, rangeTransactions, granularity } = useMemo(() => {
     const now = new Date();
     const startDate = new Date(now);
     const days =
@@ -64,6 +64,9 @@ const DashboardPage = () => {
       return txDate <= now;
     });
 
+    const granularityValue =
+      period === "week" ? "day" : period === "month" ? "week" : "month";
+
     const allSorted = [...filtered].sort((a, b) => {
       const aDate = new Date(a.date).getTime();
       const bDate = new Date(b.date).getTime();
@@ -77,7 +80,25 @@ const DashboardPage = () => {
     });
 
     let running = 0;
-    const points = [];
+    let runningAtStart = 0;
+    const bucketBalances = new Map();
+
+    const getBucketKey = (date) => {
+      if (granularityValue === "day") {
+        return date.toISOString().slice(0, 10);
+      }
+      if (granularityValue === "week") {
+        const normalized = new Date(date);
+        normalized.setHours(0, 0, 0, 0);
+        const day = normalized.getDay() || 7;
+        normalized.setDate(normalized.getDate() - (day - 1));
+        return normalized.toISOString().slice(0, 10);
+      }
+      const year = date.getFullYear();
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      return `${year}-${month}`;
+    };
+
     allSorted.forEach((tx) => {
       const amount = Number(tx.amount || 0);
       if (tx.type === "income") {
@@ -89,15 +110,66 @@ const DashboardPage = () => {
       }
 
       const txDate = new Date(tx.date);
-      if (txDate < startDate || txDate > now) return;
+      if (txDate < startDate) {
+        runningAtStart = running;
+        return;
+      }
+      if (txDate > now) return;
 
-      points.push({
-        key: txDate.toISOString(),
-        balance: Number(running.toFixed(2)),
-      });
+      const bucketKey = getBucketKey(txDate);
+      bucketBalances.set(bucketKey, Number(running.toFixed(2)));
     });
 
-    return { chartPoints: points, rangeTransactions: inRange };
+    const buildRange = () => {
+      const range = [];
+      if (granularityValue === "day") {
+        const current = new Date(startDate);
+        current.setHours(0, 0, 0, 0);
+        const end = new Date(now);
+        end.setHours(0, 0, 0, 0);
+        while (current <= end) {
+          range.push(getBucketKey(current));
+          current.setDate(current.getDate() + 1);
+        }
+        return range;
+      }
+      if (granularityValue === "week") {
+        const current = new Date(startDate);
+        current.setHours(0, 0, 0, 0);
+        const day = current.getDay() || 7;
+        current.setDate(current.getDate() - (day - 1));
+        const end = new Date(now);
+        end.setHours(0, 0, 0, 0);
+        while (current <= end) {
+          range.push(getBucketKey(current));
+          current.setDate(current.getDate() + 7);
+        }
+        return range;
+      }
+
+      const current = new Date(startDate.getFullYear(), startDate.getMonth(), 1);
+      const end = new Date(now.getFullYear(), now.getMonth(), 1);
+      while (current <= end) {
+        range.push(getBucketKey(current));
+        current.setMonth(current.getMonth() + 1);
+      }
+      return range;
+    };
+
+    const rangeKeys = buildRange();
+    let lastValue = runningAtStart;
+    const points = rangeKeys.map((key) => {
+      if (bucketBalances.has(key)) {
+        lastValue = bucketBalances.get(key);
+      }
+      return { key, balance: lastValue };
+    });
+
+    return {
+      chartPoints: points,
+      rangeTransactions: inRange,
+      granularity: granularityValue,
+    };
   }, [transactions, period]);
 
   const maxValue = useMemo(() => {
@@ -124,6 +196,15 @@ const DashboardPage = () => {
 
   const formatShortDate = (value) => {
     if (!value) return "";
+    if (granularity === "month") {
+      const [year, month] = value.split("-");
+      if (!year || !month) return value;
+      return `${month}.${year.slice(2)}`;
+    }
+    if (granularity === "week") {
+      const date = new Date(value);
+      return date.toLocaleDateString("ru-RU", { day: "2-digit", month: "2-digit" });
+    }
     const date = new Date(value);
     return date.toLocaleDateString("ru-RU", { day: "2-digit", month: "2-digit" });
   };
