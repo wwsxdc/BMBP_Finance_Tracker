@@ -14,15 +14,8 @@ const BalanceCard = ({ balance, onClick }) => {
       </div>
 
       <div className="card-footer">
-        <div className="card-metrics">
-          <div className="metric">
-            <span className="label">Доходы:</span>
-            <span className="value">{balance.totalIncome} ₽</span>
-          </div>
-          <div className="metric">
-            <span className="label">Расходы:</span>
-            <span className="value">{balance.totalExpenses} ₽</span>
-          </div>
+        <div className="dewiz">
+          <div>BMBP - Big Money for Big People</div>
         </div>
       </div>
     </div>

@@ -1,7 +1,10 @@
 import React, { useEffect, useState } from "react";
 import BalanceCard from "../../components/balance/BalanceCard";
 import { useBalance } from "../../hooks/finance/useBalance";
-import { createTransaction } from "../../services/api/financeApi";
+import {
+  createTransaction,
+  getTransactionsForAccount,
+} from "../../services/api/financeApi";
 import "./BalancePage.css";
 
 const BalancePage = () => {
@@ -14,6 +17,11 @@ const BalancePage = () => {
   const [submitSuccess, setSubmitSuccess] = useState("");
   const [isCreatingAccount, setIsCreatingAccount] = useState(false);
   const [createAccountError, setCreateAccountError] = useState("");
+  const [newAccountName, setNewAccountName] = useState("");
+  const [showDetails, setShowDetails] = useState(false);
+  const [transactions, setTransactions] = useState([]);
+  const [transactionsLoading, setTransactionsLoading] = useState(false);
+  const [transactionsError, setTransactionsError] = useState("");
 
   useEffect(() => {
     if (!accountId && accounts.length > 0) {
@@ -22,16 +30,68 @@ const BalancePage = () => {
   }, [accountId, accounts]);
 
   const handleCardClick = () => {
-    // Здесь будет переход к детальной аналитике
+    setShowDetails(true);
+    fetchTransactions();
   };
+
+  const fetchTransactions = async () => {
+    const targetAccountId = accountId || accounts[0]?.id;
+    if (!targetAccountId) return;
+    setTransactionsLoading(true);
+    setTransactionsError("");
+    try {
+      const data = await getTransactionsForAccount(targetAccountId);
+      setTransactions(data || []);
+    } catch (error) {
+      setTransactionsError(error.message || "Ошибка загрузки транзакций");
+    } finally {
+      setTransactionsLoading(false);
+    }
+  };
+
+  const closeDetails = () => {
+    setShowDetails(false);
+  };
+
+  const weekAgo = new Date();
+  weekAgo.setDate(weekAgo.getDate() - 7);
+  const lastWeekTransactions = transactions.filter((transaction) => {
+    if (!transaction?.date) return false;
+    const txDate = new Date(transaction.date);
+    return txDate >= weekAgo;
+  });
+  const incomeTotal = transactions.reduce((sum, transaction) => {
+    if (transaction.type === "income") {
+      return sum + Number(transaction.amount || 0);
+    }
+    return sum;
+  }, 0);
+  const expenseTotal = transactions.reduce((sum, transaction) => {
+    if (transaction.type === "expense") {
+      return sum + Math.abs(Number(transaction.amount || 0));
+    }
+    return sum;
+  }, 0);
+  const sortedLastWeek = [...lastWeekTransactions].sort((a, b) => {
+    const aDate = new Date(a.date).getTime();
+    const bDate = new Date(b.date).getTime();
+    return bDate - aDate;
+  });
 
   const handleCreateAccount = async () => {
     if (isCreatingAccount) return;
     setCreateAccountError("");
+    const trimmedName = newAccountName.trim();
+    if (!trimmedName) {
+      setCreateAccountError("Введите название счета");
+      return;
+    }
     setIsCreatingAccount(true);
-    const result = await createAccount("Основной счет", 0);
+    const result = await createAccount(trimmedName, 0);
     if (!result.success) {
       setCreateAccountError(result.error || "Ошибка создания счета");
+    } else {
+      setNewAccountName("");
     }
     setIsCreatingAccount(false);
   };
@@ -55,13 +115,20 @@ const BalancePage = () => {
 
     try {
       setIsSubmitting(true);
+      const finalAmount =
+        transactionType === "expense"
+          ? -Math.abs(parsedAmount)
+          : Math.abs(parsedAmount);
       await createTransaction({
         accountId,
-        amount: parsedAmount,
+        amount: finalAmount,
         type: transactionType,
       });
       setAmount("");
       setSubmitSuccess("Транзакция добавлена");
+      if (showDetails) {
+        fetchTransactions();
+      }
     } catch (error) {
       setSubmitError(error.message || "Ошибка создания транзакции");
     } finally {
@@ -83,6 +150,12 @@ const BalancePage = () => {
         <div className="empty-state">
           <h2>Нет счетов</h2>
           <p>Создайте первый счет, чтобы видеть баланс и транзакции.</p>
+          <input
+            type="text"
+            value={newAccountName}
+            onChange={(event) => setNewAccountName(event.target.value)}
+            placeholder="Название счета"
+          />
           {createAccountError && (
             <div className="form-error">{createAccountError}</div>
           )}
@@ -135,21 +208,36 @@ const BalancePage = () => {
 
           <div className="form-row">
             <label htmlFor="amount-input">Сумма</label>
-            <input
-              id="amount-input"
-              type="number"
-              min="0"
-              step="0.01"
-              value={amount}
-              onChange={(event) => setAmount(event.target.value)}
-              placeholder="0.00"
-            />
+            <div className="amount-input">
+              {transactionType === "expense" && (
+                <span className="amount-sign">−</span>
+              )}
+              <input
+                id="amount-input"
+                type="number"
+                min="0"
+                step="0.01"
+                value={amount}
+                onChange={(event) => {
+                  const { value } = event.target;
+                  if (!value) {
+                    setAmount("");
+                    return;
+                  }
+                  const numericValue = Number(value);
+                  if (!numericValue) {
+                    setAmount(value);
+                    return;
+                  }
+                  setAmount(String(Math.abs(numericValue)));
+                }}
+                placeholder="0.00"
+              />
+            </div>
           </div>
 
           {submitError && <div className="form-error">{submitError}</div>}
-          {submitSuccess && (
-            <div className="form-success">{submitSuccess}</div>
-          )}
+          {submitSuccess && <div className="form-success">{submitSuccess}</div>}
 
           <button type="submit" disabled={isSubmitting}>
             {isSubmitting ? "Добавление..." : "Добавить"}
@@ -157,9 +245,67 @@ const BalancePage = () => {
         </form>
       </div>
 
-      <div className="transaction-list">
-        <h2>Последние транзакции</h2>
-      </div>
+      {showDetails && (
+        <div className="balance-modal">
+          <div className="balance-modal__content">
+            <div className="balance-modal__header">
+              <h2>ДОП. ИНФОРМАЦИЯ</h2>
+              <button
+                className="balance-modal__close"
+                onClick={closeDetails}
+                aria-label="Закрыть"
+              >
+                ×
+              </button>
+            </div>
+
+            {transactionsLoading && <div>Загрузка...</div>}
+            {transactionsError && (
+              <div className="form-error">{transactionsError}</div>
+            )}
+            {!transactionsLoading && !transactionsError && (
+              <>
+                <div className="balance-stats">
+                  <div className="balance-stat">
+                    <div className="balance-stat__label">Доходы</div>
+                    <div className="balance-stat__value">{incomeTotal} ₽</div>
+                  </div>
+                  <div className="balance-stat">
+                    <div className="balance-stat__label">Расходы</div>
+                    <div className="balance-stat__value">{expenseTotal} ₽</div>
+                  </div>
+                </div>
+
+                <div className="transaction-list">
+                  <h3>Транзакции за 7 дней</h3>
+                  <ul>
+                    {sortedLastWeek.length === 0 ? (
+                      <li className="transaction-item transaction-item--empty">
+                        Транзакций за неделю нет
+                      </li>
+                    ) : (
+                      sortedLastWeek.map((transaction) => (
+                        <li key={transaction.id} className="transaction-item">
+                          <div className="transaction-item__type">
+                            {transaction.type === "income"
+                              ? "Доход"
+                              : transaction.type === "expense"
+                                ? "Расход"
+                                : "Перевод"}
+                          </div>
+                          <div className="transaction-item__amount">
+                            {transaction.amount} ₽
+                          </div>
+                        </li>
+                      ))
+                    )}
+                  </ul>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 };

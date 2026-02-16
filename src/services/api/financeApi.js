@@ -57,16 +57,11 @@ export const deleteAccount = async (accountId) => {
   }
 };
 
-export const getTransactionsForAccount = async (
-  accountId,
-  period = "month"
-) => {
+export const getTransactionsForAccount = async (accountId, period) => {
   try {
     const response = await axios.get(
       `${API_BASE_URL}/transactions/account/${accountId}`,
-      {
-        params: { period },
-      }
+      period ? { params: { period } } : undefined
     );
     return response.data;
   } catch (error) {
@@ -83,15 +78,16 @@ export const createTransaction = async (data) => {
     if (!accountId) {
       throw new Error("Необходимо указать счет");
     }
-    if (!amount || amount <= 0) {
-      throw new Error("Сумма должна быть положительной");
+    const numericAmount = Number(amount);
+    if (Number.isNaN(numericAmount) || numericAmount === 0) {
+      throw new Error("Сумма должна быть числом и не равна 0");
     }
     if (!type || !["income", "expense", "transfer"].includes(type)) {
       throw new Error("Тип должен быть income, expense или transfer");
     }
 
     const response = await axios.post(`${API_BASE_URL}/transactions`, {
-      amount: Number(amount),
+      amount: numericAmount,
       type,
       account_id: accountId,
       category_id: categoryId || null,
