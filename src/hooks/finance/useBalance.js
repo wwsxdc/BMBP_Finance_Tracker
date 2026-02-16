@@ -76,5 +76,6 @@ export const useBalance = () => {
     error,
     createAccount: createNewAccount,
     updateBalance: updateAccount,
+    refreshUser,
   };
 };

@@ -1,0 +1,137 @@
+.dashboard-page {
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.dashboard-header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.dashboard-controls {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.dashboard-controls select {
+  padding: 8px 10px;
+  border: 1px solid #c9c9c9;
+  border-radius: 6px;
+  background: #ffffff;
+  width: 100%;
+  font-size: 17px;
+}
+
+.period-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.period-buttons button {
+  padding: 8px 12px;
+  border: 1px solid #c9c9c9;
+  border-radius: 999px;
+  background: #ffffff;
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.period-buttons button.active {
+  background: #4f5155;
+  color: #ffffff;
+  border-color: #737373;
+}
+
+.chart-card {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+}
+
+.chart {
+  width: 100%;
+  height: 260px;
+}
+
+.chart-card .recharts-cartesian-axis-tick-value {
+  fill: #6b7280;
+}
+
+.chart-legend {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.legend-scale {
+  font-size: 12px;
+  color: #6b7280;
+}
+
+.dashboard-transactions {
+  background: #ffffff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+}
+
+.dashboard-transactions h2 {
+  margin: 0;
+  font-size: 18px;
+  color: #111827;
+}
+
+.dashboard-error {
+  color: #b00020;
+}
+
+.transaction-list {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.transaction-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #f4f6fb;
+  padding: 10px 12px;
+  border-radius: 8px;
+  gap: 12px;
+}
+
+.transaction-item--empty {
+  justify-content: center;
+  color: #6b7280;
+}
+
+.transaction-item__type {
+  font-size: 14px;
+  color: #111827;
+}
+
+.transaction-item__date {
+  font-size: 12px;
+  color: #6b7280;
+  margin-left: auto;
+}
+
+.transaction-item__amount {
+  font-weight: 600;
+  min-width: 90px;
+  text-align: right;
+  color: #111827;
+}

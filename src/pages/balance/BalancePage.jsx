@@ -8,7 +8,8 @@ import {
 import "./BalancePage.css";
 
 const BalancePage = () => {
-  const { balance, accounts, loading, error, createAccount } = useBalance();
+  const { balance, accounts, loading, error, createAccount, refreshUser } =
+    useBalance();
   const [amount, setAmount] = useState("");
   const [accountId, setAccountId] = useState("");
   const [transactionType, setTransactionType] = useState("income");
@@ -124,6 +125,9 @@ const BalancePage = () => {
         amount: finalAmount,
         type: transactionType,
       });
+      if (refreshUser) {
+        await refreshUser();
+      }
       setAmount("");
       setSubmitSuccess("Транзакция добавлена");
       if (showDetails) {
@@ -210,7 +214,7 @@ const BalancePage = () => {
             <label htmlFor="amount-input">Сумма</label>
             <div className="amount-input">
               {transactionType === "expense" && (
-                <span className="amount-sign">−</span>
+                <span className="amount-sign"></span>
               )}
               <input
                 id="amount-input"
